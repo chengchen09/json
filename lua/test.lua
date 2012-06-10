@@ -1,0 +1,15 @@
+json = require("json")
+
+f = io.open('./test_pass1.json', 'r')
+tt = json.load(f)
+f:close()
+f = io.open('./lua_pass1.json', 'w')
+assert(f)
+print(json.dump(tt, f))
+f:close()
+
+f = io.open('./tt.lua', 'w')
+json.dump_lua(tt, f)
+f:close()
+ttt = json.load_lua('tt')
+print(json.dumps(ttt))
