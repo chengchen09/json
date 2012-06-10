@@ -5,7 +5,7 @@ Description: a class used to parse the json format string
 
 _ESCAPE_STR = ' \n\t\r'
 _QUOTE_STR = '"\\/bfnrtu'
-_ERR_MSG = 'Json parse error'
+_ERR_MSG = 'Json format error'
 
 class JsonParser:
     
@@ -18,18 +18,19 @@ class JsonParser:
 
     def parse(self):
         try:
-            narray = 0
-            while self._index < len(self._ss):
-                c = self._ss[self._index]
-                if c == '{':
-                    self._index += 1
-                    self._dd.update(self._parse_object())
-                elif c == '[':
-                    self._index += 1
-                    self._dd[narray] = self._parse_array()
-                    narray += 1
-                else:
-                    self._index += 1
+            self._escape()
+            c = self._ss[self._index]
+            self._index += 1
+            if c == '{':
+                self._dd = self._parse_object()
+            elif c == '[':
+                #self._dd[0] = self._parse_array(i)
+                self._dd = self._parse_array()
+            else:
+                raise JsonParseError(_ERR_MSG, self._ss, self._index)
+            self._escape()
+            if self._index < len(self._ss):
+                raise JsonParseError(_ERR_MSG + '--extra data', self._ss, self._index)
             return self._dd
         except JsonParseError as e:
             e.err_msg()
@@ -145,11 +146,8 @@ class JsonParser:
         return v
 
     def _escape(self):
-        try:
-            while self._ss[self._index] in _ESCAPE_STR:
-                self._index = self._index + 1
-        except IndexError:
-            raise JsonParseError(_ERR_MSG, self._ss, self._index)
+        while self._index < len(self._ss) and self._ss[self._index] in _ESCAPE_STR:
+            self._index = self._index + 1
 
 class JsonParseError(ValueError):
     def __init__(self, msg, ss, index):

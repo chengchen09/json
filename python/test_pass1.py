@@ -60,23 +60,29 @@ JSON = r'''
 '''
 
 jfile = './test_pass1.json'
+pfile = './test_pass1.python'
 
 class TestPass1(TestCase):
     def runTest(self):
         cj = CCJson()
         cj.load(JSON, 's')
+
+        # json format
         f = open(jfile, 'w')
         cj.dump(f, 'j')
         f.close()
-        res = CCJson()
+        jres = CCJson()
         f = open(jfile, 'r')
-        res.load(f, 'j')
+        jres.load(f, 'j')
         f.close()
-        self.assertEquals(cj._dd, res._dd)
-        print 'passed'
-        #try:
-        #    json.dumps(res, allow_nan=False)
-        #except ValueError:
-        #    pass
-        #else:
-        #    self.fail("23456789012E666 should be out of range")
+        self.assertEquals(cj._dd, jres._dd)
+        
+        # python format
+        f = open(pfile, 'w')
+        cj.dump(f, 'p')
+        f.close()
+        pres = CCJson()
+        f = open(pfile, 'r')
+        pres.load(f, 'p')
+        f.close()
+        self.assertEquals(cj._dd, pres._dd)
