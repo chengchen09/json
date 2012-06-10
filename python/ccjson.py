@@ -41,31 +41,27 @@ class CCJson:
     def __init__(self):
         self._dd = None
 
-    def load(self, f, mode='j'):
-        '''load data from a json/python format file'''
-        ss = ''
-        if mode == 'p':
-            self._dd = pickle.load(f)
-            return
-        elif mode == 'j':
-            ss = f.read()
-        elif mode == 's':
-            ss = f
-        else:
-            print 'invalid mode:', mode
-            return
+    def load(self, f):
+        ss = f.read()
         jparser = JsonParser(ss)
         self._dd = jparser.parse()
+    
+    def loads(self, ss):
+        jparser = JsonParser(ss)
+        self._dd = jparser.parse()
+    
+    def load_python(self, f):
+        self._dd = pickle.load(f)
+    
+    def dump(self, f):
+        f.write(self._str())
+    
+    def dumps(self):
+        return self._str()
+    
+    def dump_python(self, f):
+        pickle.dump(self._dd, f)
 
-    def dump(self, f, mode='j'):
-        '''dump data as json/python format into a file'''
-        if mode == 'p':
-            pickle.dump(self._dd, f)
-        elif mode == 'j':
-            f.write(self._str())
-        else:
-            print 'invalid mode'
-        
     def update(self, d):
         '''update data from a python dictionary'''
         if type(self._dd) == type([]):
@@ -85,9 +81,6 @@ class CCJson:
         else:
             print "json object can't be append"
 
-    def jprint(self):
-        '''print the data as json format'''
-        print self._str()
 
     def __setitem__(self, key, value):
         if self._dd == None:

@@ -12,24 +12,24 @@ pfile = './test_pass2.python'
 class TestPass2(TestCase):
     def runTest(self):
         cj = CCJson()
-        cj.load(JSON, 's')
+        cj.loads(JSON)
 
         # json format
         f = open(jfile, 'w')
-        cj.dump(f, 'j')
+        cj.dump(f)
         f.close()
         jres = CCJson()
         f = open(jfile, 'r')
-        jres.load(f, 'j')
+        jres.load(f)
         f.close()
         self.assertEquals(cj._dd, jres._dd)
         
         # python format
         f = open(pfile, 'w')
-        cj.dump(f, 'p')
+        cj.dump_python(f)
         f.close()
         pres = CCJson()
         f = open(pfile, 'r')
-        pres.load(f, 'p')
+        pres.load_python(f)
         f.close()
         self.assertEquals(cj._dd, pres._dd)
