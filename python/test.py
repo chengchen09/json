@@ -6,7 +6,6 @@ Description: a collection of test for the class CCJson
 '''
 from ccjson import CCJson
 from test_pass1 import TestPass1 
-from test_pass2 import TestPass2 
 import sys
 
 def err(msg):
