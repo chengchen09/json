@@ -1,7 +1,7 @@
 from unittest import TestCase
 from ccjson import CCJson
 
-JSON = r'''
+JSON1 = r'''
 [
     "JSON Test Pattern pass1",
     {"object with 1 member":["array with 1 element"]},
@@ -59,30 +59,39 @@ JSON = r'''
 ,"rosebud"]
 '''
 
-jfile = './test_pass1.json'
-pfile = './test_pass1.python'
+JSON2 = r'''
+[[[[[[[[[[[[[[[[[[["Not too deep"]]]]]]]]]]]]]]]]]]]
+'''
+
+JSONS = [JSON1, JSON2]
+
+fn = './test_pass'
 
 class TestPass1(TestCase):
     def runTest(self):
-        cj = CCJson()
-        cj.loads(JSON)
+        index = 0
+        for JSON in JSONS:
+            index = index + 1
+            cj = CCJson()
+            cj.loads(JSON)
 
-        # json format
-        f = open(jfile, 'w')
-        cj.dump(f)
-        f.close()
-        jres = CCJson()
-        f = open(jfile, 'r')
-        jres.load(f)
-        f.close()
-        self.assertEquals(cj._dd, jres._dd)
-        
-        # python format
-        f = open(pfile, 'w')
-        cj.dump_python(f)
-        f.close()
-        pres = CCJson()
-        f = open(pfile, 'r')
-        pres.load_python(f)
-        f.close()
-        self.assertEquals(cj._dd, pres._dd)
+            # json format
+            jfile = fn + str(index) + '.json'
+            f = open(jfile, 'w')
+            cj.dump(f)
+            f.close()
+            jres = CCJson()
+            f = open(jfile, 'r')
+            jres.load(f)
+            f.close()
+            self.assertEquals(cj._dd, jres._dd)
+            # python format
+            pfile = fn + str(index) + '.pj'
+            f = open(pfile, 'w')
+            cj.dump_python(f)
+            f.close()
+            pres = CCJson()
+            f = open(pfile, 'r')
+            pres.load_python(f)
+            f.close()
+            self.assertEquals(cj._dd, pres._dd)

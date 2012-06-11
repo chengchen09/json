@@ -82,10 +82,7 @@ def test_update():
 def test_dump_load():
     tt = TestPass1()
     tt.runTest()
-    print 'test CCJson dump() load() based on json_test1.json passed'
-    tt = TestPass2()
-    tt.runTest()
-    print 'test CCJson dump() load() based on json_test2.json passed'
+    print 'test CCJson dump() load() based on json_test1.py passed'
 
 if __name__ == '__main__':
     test_get_set_del()

@@ -16,16 +16,16 @@ def _jv_to_str(jv):
         for key in jv.keys():
             if type(key) == type(''):
                 key_flag = True
-                ss += '"' + key + '": ' + _jv_to_str(jv[key]) + ', '
+                ss += '"' + key + '":' + _jv_to_str(jv[key]) + ','
         if key_flag:
-            ss = ss[:-2]
+            ss = ss[:-1]
         ss += '}'
     elif type(jv) == type([]):
         ss += '['
         if len(jv) > 0:
             ss += _jv_to_str(jv[0])
         for i in range(1, len(jv)):
-            ss += ',\n' + _jv_to_str(jv[i])
+            ss += ',' + _jv_to_str(jv[i])
         ss += ']'
     elif jv == True:
         ss += 'true'
@@ -36,6 +36,47 @@ def _jv_to_str(jv):
     else:
         ss = str(jv)
     return ss
+
+def _jv_to_formatstr(jv, space=''):
+    ss = ''
+    if type(jv) == type(''):
+        ss = '"' + jv + '"'
+    elif type(jv) == type({}):
+        ss += '{\n'
+        space += '  '
+        key_flag = False
+        for key in jv.keys():
+            if type(key) == type(''):
+                key_flag = True
+                ss += space + '"' + key + '": ' + _jv_to_formatstr(jv[key], space) + ',\n'
+        space = space[:-2]
+        if key_flag:
+            ss = ss[:-2]
+            ss += '\n' + space + '}'
+        else:
+            ss = ss[:-1] + '}'
+    elif type(jv) == type([]):
+        ss += '[\n'
+        space += '  '
+        if len(jv) > 0:
+            ss += space + _jv_to_formatstr(jv[0], space)
+        for i in range(1, len(jv)):
+            ss += ',\n' + space + _jv_to_formatstr(jv[i], space)
+        space = space[:-2]
+        if len(jv) > 0:
+            ss += '\n' + space + ']'
+        else:
+            ss = ss[:-1] + ']'
+    elif jv == True:
+        ss += 'true'
+    elif jv == False:
+        ss += 'false'
+    elif jv == None:
+        ss += 'null'
+    else:
+        ss = str(jv)
+    return ss
+
 
 class CCJson:
     def __init__(self):
@@ -51,16 +92,18 @@ class CCJson:
         self._dd = jparser.parse()
     
     def load_python(self, f):
-        self._dd = pickle.load(f)
+        ss = f.read()
+        jparser = JsonParser(ss)
+        self._dd = jparser.parse()
     
     def dump(self, f):
-        f.write(self._str())
+        f.write(self._formatstr())
     
     def dumps(self):
-        return self._str()
+        return self._formatstr()
     
     def dump_python(self, f):
-        pickle.dump(self._dd, f)
+        f.write(self._str())
 
     def update(self, d):
         '''update data from a python dictionary'''
@@ -116,5 +159,7 @@ class CCJson:
             return None
 
     def _str(self):
-        '''return json format string'''
         return _jv_to_str(self._dd)
+    
+    def _formatstr(self):
+        return _jv_to_formatstr(self._dd)
