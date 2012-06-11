@@ -2,7 +2,6 @@
 Author: Chen Cheng
 Description: a class used to handle json
 '''
-import pickle
 from jsonparser import JsonParser, JsonParseError
 
 def _jv_to_str(jv):
